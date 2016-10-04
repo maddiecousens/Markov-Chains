@@ -1,4 +1,5 @@
 from random import choice
+import sys
 
 
 def open_and_read_file(file_path):
@@ -31,49 +32,51 @@ def make_chains(text_string):
 
     words = text_string.split()
 
+    #  Loops through words, creates dictionary with tuples as keys and values of
+    #       lists of possible next words
     for i in xrange(len(words) - 1):
         word1 = words[i]
         word2 = words[i + 1]
 
         if i < len(words) - 2:
             word3 = words[i + 2]
-        else:
-            word3 = None
-
-        # if (word1, word2) in chains:
-        #     chains[(word1, word2)].append(word3)
-        # else:
-        #     chains[(word1, word2)] = [word3]
-
-        # get the thing that's at the key (word1, word2), if it doesn't exist, get&set []
-        # append word3 to ^
-        chains.setdefault((word1, word2), []).append(word3)
-
+            # If tuple exists as key, add next word to value list.
+            # If tuple does not exist as key, add to dictionary initialized with
+            #   empty list and append next word
+            chains.setdefault((word1, word2), []).append(word3)
+        
     return chains
 
 
 def make_text(chains):
     """Takes dictionary of markov chains; returns random text."""
 
-    text = ""
+    # Randomly choose key from dictionary which will be a tuple
+    starting_key = choice(chains.keys()) 
 
-    # your code goes here
+    # Create list of words, starting with values from starting_key tuple
+    text = [starting_key[0], starting_key[1]]
 
-    return text
+    # While last two values of list exist as tuple key in chains dictionary,
+    #       choose next word from values at that key and append to words list
+    while (text[-2], text[-1]) in chains:
+        text.append(choice(chains[(text[-2], text[-1])]))
+
+    # Join list, return string
+    return " ".join(text)
 
 
-input_path = "green-eggs.txt"
+input_path = sys.argv[1]
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
-print input_text
+
 
 # Get a Markov chain
 chains = make_chains(input_text)
-for k, v in chains.iteritems():
-    print k, v
 
-# # Produce random text
-# random_text = make_text(chains)
+# Produce random text
+random_text = make_text(chains)
 
-# print random_text
+
+print random_text
