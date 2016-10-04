@@ -40,10 +40,12 @@ def make_chains(text_string):
 
         if i < len(words) - 2:
             word3 = words[i + 2]
+        else:
+            word3 = None
             # If tuple exists as key, add next word to value list.
             # If tuple does not exist as key, add to dictionary initialized with
             #   empty list and append next word
-            chains.setdefault((word1, word2), []).append(word3)
+        chains.setdefault((word1, word2), []).append(word3)
         
     return chains
 
@@ -59,8 +61,13 @@ def make_text(chains):
 
     # While last two values of list exist as tuple key in chains dictionary,
     #       choose next word from values at that key and append to words list
-    while (text[-2], text[-1]) in chains:
-        text.append(choice(chains[(text[-2], text[-1])]))
+    # while (text[-2], text[-1]) in chains:
+    while True:
+        next_word = choice(chains[(text[-2], text[-1])])
+        if next_word:
+            text.append(next_word)
+        else:
+            break
 
     # Join list, return string
     return " ".join(text)
