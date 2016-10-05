@@ -5,6 +5,7 @@ import os
 
 
 def setup_twitter():
+    """ Returns api object of the twitter Library"""
     api = twitter.Api(
         consumer_key=os.environ['TWITTER_CONSUMER_KEY'],
         consumer_secret=os.environ['TWITTER_CONSUMER_SECRET'],
@@ -44,50 +45,60 @@ def make_chains_n(text_string, n):
 
     words = text_string.split()
 
+    # Iterating over the length of all words in the file, not including the last
+    # n items (so that last tuple is in range)
     for i in xrange(len(words) - (n - 1)):
+
+        #initialize key that will be tupalized later
         n_gram_key = []
+
+        # Iterate over n within i, so that each time we are making a key of n 
+        # words starting at the ith index
         for j in xrange(n):
             n_gram_key.append(words[i + j])
 
+        # If there is a next word in text string assign it to next_word
         if i < len(words) - n:
             next_word = words[i+n]
+        # If last work in tuple key is last word in text string (same thing 
+            # as words list) then set next_word to None
         else:
             next_word = None
 
+        # If the key already exists, append next word to the value list. 
+        # Otherwise, initialize with an empty list and append next_word
         chains.setdefault(tuple(n_gram_key), []).append(next_word)
 
     return chains
 
 def create_sentence(chains, n):
 
+    # Create list of keys that start with a capitalized word
     capital_keys = [key for key in chains.keys() if key[0].istitle()]
-    # starting_key = choice(capital_keys)
+    
+    # Choose random word from capital_keys
     key = choice(capital_keys)
 
+    # Create text list initialized with words from key tuple
     text = list(key)
-    # text = list(starting_key)
-    # text = []
-    # for i in xrange(n):
-    #     text.append(starting_key[i])
 
-    while True:
-        # key_check = []
-        # for j in xrange(-n, 0):
-        #     key_check.append(text[j])
+    creating_sentence = True
 
-        # next_word = choice(chains[tuple(key_check)])
+    while creating_sentence:
         
+        # Set next word to random choice from value list at that key
         next_word = choice(chains[key])
         
+        # If next word is not None
         if next_word:
-            # only if next word is not None
+            # Add next_word to text list
             text.append(next_word)
-            # end if reaches end of punctuation
+            # End creating sentence if next_word ends in punctuation.
             if next_word[-1] in ['.', '!', '?']:
-                break
-        # next_word is None
+                creating_sentence = False
+        # If next_word is None end creating sentence
         else:
-            break
+            creating_sentence = False
 
         key = key[1:] + (next_word,)
 
