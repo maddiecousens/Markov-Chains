@@ -103,7 +103,7 @@ def make_text(chains):
     # Join list, return string
     return " ".join(text)
 
-def make_text_n(chains, n):
+def make_text_n(chains, n, sentences):
     """Takes dictionary of markov chains; returns random text."""
 
     # Randomly choose key from dictionary which will be a tuple
@@ -112,16 +112,21 @@ def make_text_n(chains, n):
     starting_key = choice(capital_keys)
 
     text = []
+    count = 0
     for i in xrange(n):
         text.append(starting_key[i])
 
-    while True:
+    while True and count < sentences:
         key_check = []
         for j in xrange(-n, 0):
             key_check.append(text[j])
         next_word = choice(chains[tuple(key_check)])
+        
         if next_word:
             text.append(next_word)
+            # if not next_word[-1].isalpha() and not next_word[-1].isdigit():
+            if next_word[-1] in ['.', '!', '?']:
+                count += 1
         else:
             break
 
@@ -133,6 +138,7 @@ def make_text_n(chains, n):
 
 input_path = sys.argv[1]
 n = int(sys.argv[2])
+sentences = int(sys.argv[3])
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
@@ -143,7 +149,7 @@ chains = make_chains_n(input_text, n)
 # print chains
 
 # # Produce random text
-random_text = make_text_n(chains, n)
+random_text = make_text_n(chains, n, sentences)
 
 
 print random_text
