@@ -28,6 +28,15 @@ def open_and_read_file(file_path):
     return text
 
 
+def create_text_string(tweeter_list):
+    final_string = ''
+    for tweet_list in tweeter_list:
+        final_string += ' ' + ' '.join(tweet_list)
+
+    return final_string
+
+
+
 def make_chains_n(text_string, n):
     """Takes input text as string; returns _dictionary_ of markov chains.
 
@@ -74,10 +83,11 @@ def make_chains_n(text_string, n):
 def create_sentence(chains, n):
 
     # Create list of keys that start with a capitalized word
-    capital_keys = [key for key in chains.keys() if key[0].istitle()]
+    # capital_keys = [key for key in chains.keys() if key[0].istitle()]
     
     # Choose random word from capital_keys
-    key = choice(capital_keys)
+    # key = choice(capital_keys)
+    key = choice(chains.keys())
 
     # Create text list initialized with words from key tuple
     text = list(key)
@@ -126,16 +136,39 @@ def make_text_n(chains, n):
     return " ".join(sentences_list)
 
 
+def get_twitter_posts(api, username, num_posts = 15):
+    tweets = []
+    twitter_obj = api.GetUserTimeline(screen_name=username, count=200)
+    while len(tweets) < num_posts:
+        for tweet in twitter_obj:
+            # this excludes tweets with photos
+            if not tweet.media:
+                tweets.append(tweet.text)
+        break
+    return tweets
+    
+
+
 api = setup_twitter()
 
+# usernames = ['kanyewest', 'realdonaldtrump']
+
+kanye = get_twitter_posts(api, 'kanyewest',100)
+# trump = get_twitter_posts(api, 'realdonaldtrump')
+kim = get_twitter_posts(api, 'kimkardashian', 100)
+emoji = get_twitter_posts(api, 'emojistory', 100)
+
+input_text = create_text_string([kanye, emoji, kim])
+
+# print input_text
 # import pdb; pdb.set_trace()
 
 # print api.VerifyCredentials()
-input_path = sys.argv[1]
-n = int(sys.argv[2])
+# input_path = sys.argv[1]
+n = int(sys.argv[1])
 
 # Open the file and turn it into one long string
-input_text = open_and_read_file(input_path)
+# input_text = open_and_read_file(input_path)
 # Get a Markov chain
 chains = make_chains_n(input_text, n)
 tweet =  make_text_n(chains, n)
