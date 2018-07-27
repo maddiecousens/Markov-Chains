@@ -103,11 +103,12 @@ def make_text(chains):
     # Join list, return string
     return " ".join(text)
 
+
 def make_text_n(chains, n, sentences):
     """Takes dictionary of markov chains; returns random text."""
 
     # Randomly choose key from dictionary which will be a tuple
-    
+
     capital_keys = [key for key in chains.keys() if key[0].istitle()]
     starting_key = choice(capital_keys)
 
@@ -121,7 +122,7 @@ def make_text_n(chains, n, sentences):
         for j in xrange(-n, 0):
             key_check.append(text[j])
         next_word = choice(chains[tuple(key_check)])
-        
+
         if next_word:
             text.append(next_word)
             # if not next_word[-1].isalpha() and not next_word[-1].isdigit():
@@ -131,9 +132,6 @@ def make_text_n(chains, n, sentences):
             break
 
     return " ".join(text)
-
-
-
 
 
 input_path = sys.argv[1]
